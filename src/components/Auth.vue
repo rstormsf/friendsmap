@@ -5,34 +5,18 @@
 
 
 <script>
-import { mapGetters } from 'vuex';
 import firebase from 'firebase';
-import { FBApp } from '../helpers/firebaseConfig';
-// import VueFire from 'vuefire';
-// import Vue from 'vue';
-
-// Vue.use(VueFire);
-// const onSignInSuccess = function (currentUser, credential) {
-// }.bind(Auth);
-
-
-// const uiConfig = ;
+import { FBApp, FBUIApp } from '../helpers/firebaseConfig';
 
 const Auth = {
   name: 'auth',
 
-  computed: {
-    ...mapGetters({
-      fbUiApp: 'fbUiApp',
-    }),
-  },
-
   mounted() {
-    this.fbUiApp.start('#firebaseui-auth-container', this.initConfig());
+    FBUIApp.start('#firebaseui-auth-container', this.initConfig());
   },
 
   destroyed() {
-    this.fbUiApp.reset();
+    FBUIApp.reset();
   },
 
   firebase: {

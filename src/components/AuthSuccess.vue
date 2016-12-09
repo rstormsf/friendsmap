@@ -1,7 +1,7 @@
 <template>
   <div>
     Success signups
-    <pre>
+    <pre v-if="user">
       {{user}}  
     </pre>
     <router-link to="/">Home</router-link>

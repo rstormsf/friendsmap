@@ -1,8 +1,9 @@
 <template>
   <div class="hello">
     <pre>current user: {{user}}</pre>
-       <ul v-for="us in users">
-          <li>{{us.uid}} .. {{us.email}}</li>
+       <ul v-for="us in onineUsersWithEmail">
+          <li>{{us.email}}</li>
+          <img :src="us.photoURL" alt="">
        </ul>
     <h1>Links
     <ul>
@@ -10,7 +11,7 @@
        <button v-if="user" @click="signOut">Sign out</button>
     </ul>
     </h1>
-
+    
     <div id="map"></div>
   </div>
 </template>
@@ -52,15 +53,33 @@ function onGotLocation(map, marker, p) {
 
 export default {
   name: 'hello',
+  data() {
+    return {
+      displayOnlineUsers: false,
+    };
+  },
 
   firebase: {
-    users: FBApp.database().ref('users'),
+    onlineUsers: FBApp.database().ref('presence'),
+    users: {
+      source: FBApp.database().ref('users'),
+      asObject: true,
+    },
   },
 
   computed: {
     ...mapGetters({
       user: 'user',
     }),
+
+    onineUsersWithEmail: function computeOnlineUsersWithEMail() {
+      // this.$firebaseRefs
+      const users = [];
+      this.onlineUsers.forEach((v) => {
+        users.push(this.users[v['.key']]);
+      });
+      return users;
+    },
   },
 
   methods: {
