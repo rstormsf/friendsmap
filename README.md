@@ -1,6 +1,12 @@
 # friendsmapvue
 
-> A Vue.js project
+> Stack:
+
+  * [Vue.js](https://vuejs.org)
+  * [Vuex](https://vuex.vuejs.org)
+  * [Vue-router](http://router.vuejs.org/en/)
+  * [Firebase](http://firebase.google.com)
+  * [FirebaseUI-web](https://github.com/firebase/firebaseui-web) for auth
 
 ## Build Setup
 
