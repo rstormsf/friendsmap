@@ -28,6 +28,8 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0
   },
   'globals': {
-    'window': true
+    'window': true,
+    'document': true,
+    'navigator': true,
   },
 }
