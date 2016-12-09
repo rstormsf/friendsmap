@@ -5,6 +5,7 @@ const getters = {
   user: state => state.user,
   fbApp: state => state.fbApp,
   fbUiApp: state => state.fbUiApp,
+  coordinates: state => state.coordinates,
 };
 
 Vue.use(Vuex);
@@ -13,6 +14,7 @@ const store = new Vuex.Store({
     user: null,
     fbApp: null,
     fbUiApp: null,
+    coordinates: null,
   },
   getters,
   mutations: {
@@ -25,6 +27,9 @@ const store = new Vuex.Store({
     },
     SET_FB_UI_APP(state, fbUiApp) {
       state.fbUiApp = fbUiApp;
+    },
+    SET_GET_COORDINATES(state, coordinates) {
+      state.coordinates = coordinates;
     },
   },
 });

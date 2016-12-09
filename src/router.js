@@ -6,7 +6,6 @@ import AuthSuccess from './components/AuthSuccess';
 // redirect from accountchooser is losing hash and redirects to the root
 // so I check query string if it exists
 const checkFromAuth = (to, from, next) => {
-  console.log(window.location.search);
   const query = window.location.search.substr(1).split('=');
   if (query[0] === 'mode') {
     next({
