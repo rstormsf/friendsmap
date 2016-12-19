@@ -1,11 +1,15 @@
 <template>
   <div class="hello">
-    <pre>current user: {{user}}</pre>
-       <ul v-for="us in onineUsersWithEmail">
-          <li>{{us.email}}</li>
-          <img :src="us.photoURL" alt="">
+    <pre v-if="user">current user: {{user.email}}</pre>
+
+        <h2>Online users:</h2>
+       <ul v-for="user in onlineUsers">
+          <li>
+            email: {{user.email}}
+            coords: {{user.coordinates}}
+          </li>
        </ul>
-    <h1>Links
+    <h1>Links</h1>
     <ul>
        <router-link v-if="!user" to="/auth">Login</router-link>
        <button v-if="user" @click="signOut">Sign out</button>
@@ -19,34 +23,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import GoogleMapsLoader from 'google-maps';
-import getCurrentPositon from '../helpers/geolocation';
+import { getCurrentPositon, watchPosition } from '../helpers/geolocation';
 import { FBApp } from '../helpers/firebaseConfig';
 
-const googleMapsInit = (cb) => {
-  /* eslint-disable prefer-arrow-callback */
-  getCurrentPositon().then(function onFirstLocation(p) {
-    const currentPos = { lat: p.coords.latitude, lng: p.coords.longitude };
-    const options = {
-      zoom: 10, center: currentPos,
-    };
-    GoogleMapsLoader.KEY = 'AIzaSyBe6DHQ84pb2qx7_Q8dlm8or9ohEQk2iIs';
-    GoogleMapsLoader.load((google) => {
-      const mapEl = document.getElementById('map');
-      const map = new google.maps.Map(mapEl, options);
-      const marker = new google.maps.Marker({
-        map,
-      });
-      marker.setPosition(currentPos);
-      map.setOptions({ center: currentPos, zoom: 10 });
-      setInterval(function onInterval() {
-        getCurrentPositon().then(cb.bind(this, map, marker));
-      }, 1000);
-    });
-  });
-};
-
-function onGotLocation(map, marker, p) {
+function onGotLocation(map, marker, store, p) {
   const currentPos = { lat: p.coords.latitude, lng: p.coords.longitude };
+  store.commit('SET_COORDINATES', currentPos);
   marker.setPosition(currentPos);
 }
 
@@ -61,10 +43,6 @@ export default {
 
   firebase: {
     onlineUsers: FBApp.database().ref('presence'),
-    users: {
-      source: FBApp.database().ref('users'),
-      asObject: true,
-    },
   },
 
   computed: {
@@ -72,14 +50,6 @@ export default {
       user: 'user',
     }),
 
-    onineUsersWithEmail: function computeOnlineUsersWithEMail() {
-      // this.$firebaseRefs
-      const users = [];
-      this.onlineUsers.forEach((v) => {
-        users.push(this.users[v['.key']]);
-      });
-      return users;
-    },
   },
 
   methods: {
@@ -92,10 +62,41 @@ export default {
     onError() {
       console.error('onError');
     },
+    googleMapsInit(cb, store) {
+      getCurrentPositon().then((p) => {
+        const currentPos = { lat: p.coords.latitude, lng: p.coords.longitude };
+        store.commit('SET_COORDINATES', currentPos);
+        const options = {
+          zoom: 10, center: currentPos,
+        };
+        GoogleMapsLoader.KEY = 'AIzaSyBe6DHQ84pb2qx7_Q8dlm8or9ohEQk2iIs';
+        GoogleMapsLoader.load((google) => {
+          const mapEl = document.getElementById('map');
+          const map = new google.maps.Map(mapEl, options);
+          this.map = map;
+          const marker = new google.maps.Marker({
+            map,
+          });
+          marker.setPosition(currentPos);
+          map.setOptions({ center: currentPos, zoom: 10 });
+          watchPosition(cb.bind(this, map, marker, store));
+        });
+      });
+    },
   },
 
-  mounted() {
-    googleMapsInit(onGotLocation);
+  beforeMount() {
+    this.googleMapsInit(onGotLocation, this.$store);
+  },
+
+  updated() {
+    console.log('updated', this.map);
+    this.onlineUsers.forEach((u) => {
+      const marker = new window.google.maps.Marker({
+        map: this.map,
+      });
+      marker.setPosition(u.coordinates);
+    });
   },
 };
 </script>

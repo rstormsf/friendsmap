@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { FBApp } from './helpers/firebaseConfig';
 
+const db = FBApp.database();
 const getters = {
   user: state => state.user,
   coordinates: state => state.coordinates,
@@ -22,7 +24,9 @@ const store = new Vuex.Store({
     SET_USER(state, user) {
       state.user = user;
     },
-    SET_GET_COORDINATES(state, coordinates) {
+    SET_COORDINATES(state, coordinates) {
+      const coordRef = db.ref(`presence/${state.user.uid}/coordinates/`);
+      coordRef.set(coordinates);
       state.coordinates = coordinates;
     },
     SET_CONNECTION(state, connection) {
