@@ -11,8 +11,8 @@
        </ul>
     <h1>Links</h1>
     <ul>
-       <router-link v-if="!user" to="/auth">Login</router-link>
-       <button v-if="user" @click="signOut">Sign out</button>
+       <router-link v-if="user.anonymous" to="/auth">Login</router-link>
+       <button v-if="!user.anonymous" @click="signOut">Sign out</button>
     </ul>
     </h1>
     
@@ -90,13 +90,14 @@ export default {
   },
 
   updated() {
-    console.log('updated', this.map);
-    this.onlineUsers.forEach((u) => {
-      const marker = new window.google.maps.Marker({
-        map: this.map,
+    if (this.map) {
+      this.onlineUsers.forEach((u) => {
+        const marker = new window.google.maps.Marker({
+          map: this.map,
+        });
+        marker.setPosition(u.coordinates);
       });
-      marker.setPosition(u.coordinates);
-    });
+    }
   },
 };
 </script>

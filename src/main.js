@@ -36,7 +36,7 @@ FBApp.auth().onAuthStateChanged((user) => {
   if (user === null) {
     /* eslint-disable no-param-reassign */
     const uid = anonymousUid();
-    user = { uid, email: `anonymous-${uid}` };
+    user = { uid, email: `anonymous-${uid}`, anonymous: true };
   }
   if (user) {
     const connectedRef = db.ref('.info/connected');
