@@ -33,11 +33,8 @@ const onConnect = (user, snap) => {
 };
 
 FBApp.auth().onAuthStateChanged((user) => {
-  if (user === null) {
-    /* eslint-disable no-param-reassign */
-    const uid = anonymousUid();
-    user = { uid, email: `anonymous-${uid}`, anonymous: true };
-  }
+  const uid = anonymousUid();
+  const anonymousUser = { uid, email: `anonymous-${uid}`, anonymous: true };
   if (user) {
     const connectedRef = db.ref('.info/connected');
     connectedRef.on('value', onConnect.bind(this, user));
@@ -45,8 +42,7 @@ FBApp.auth().onAuthStateChanged((user) => {
     store.getters.connection.remove();
     store.commit('REMOVE_CONNECTION');
   }
-  console.log('user', user);
-  store.commit('SET_USER', user);
+  store.commit('SET_USER', user || anonymousUser);
 });
 
 Vue.use(VueFire);

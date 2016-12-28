@@ -12,7 +12,7 @@ const getters = {
 Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
-    user: null,
+    user: { anonymous: true },
     fbApp: null,
     fbUiApp: null,
     coordinates: null,
@@ -27,6 +27,7 @@ const store = new Vuex.Store({
     SET_COORDINATES(state, coordinates) {
       const coordRef = db.ref(`presence/${state.user.uid}/coordinates/`);
       coordRef.set(coordinates);
+      coordRef.onDisconnect().remove();
       state.coordinates = coordinates;
     },
     SET_CONNECTION(state, connection) {
